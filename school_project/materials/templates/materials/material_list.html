@@ -1,0 +1,17 @@
+<h1>Навчальні матеріали</h1>
+
+<a href="{% url 'material-upload' %}">
+    Додати матеріал
+</a>
+
+{% for material in materials %}
+    <h2>
+        <a href="{% url 'material-detail' material.pk %}">
+            {{ material.title }}
+        </a>
+    </h2>
+
+    <p>{{ material.description }}</p>
+{% empty %}
+    <p>Матеріалів поки немає.</p>
+{% endfor %}
