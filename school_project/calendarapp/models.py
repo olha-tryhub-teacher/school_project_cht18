@@ -2,7 +2,18 @@ from django.db import models
 
 # Create your models here.
 
+class CalendarDay(models.Model):
+    date = models.DateField(verbose_name="Дата")
+    notes = models.TextField(blank=True, null=True, verbose_name="Заметки")
 
-class GroupInfo(models.Model):
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100)
+    def __str__(self):
+        return f"День: {self.date}"
+
+class CalendarEvent(models.Model):
+    event = models.ForeignKey('Event', on_delete=models.CASCADE, verbose_name="Подія")
+    date = models.DateField(verbose_name="Дата")
+
+    def __str__(self):
+        return f"Подія на {self.date}"
+
+
