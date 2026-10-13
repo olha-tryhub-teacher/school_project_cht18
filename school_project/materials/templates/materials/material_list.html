@@ -1,17 +1,88 @@
-<h1>Навчальні матеріали</h1>
+{% load static %}
 
-<a href="{% url 'material-upload' %}">
-    Додати матеріал
-</a>
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Навчальні матеріали</title>
+    <link rel="stylesheet" href="{% static 'materials/style.css' %}">
+</head>
 
-{% for material in materials %}
-    <h2>
-        <a href="{% url 'material-detail' material.pk %}">
-            {{ material.title }}
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Навчальні матеріали</h1>
+
+        <a class="btn" href="{% url 'material-upload' %}">
+            + Додати матеріал
         </a>
-    </h2>
+    </div>
 
-    <p>{{ material.description }}</p>
-{% empty %}
-    <p>Матеріалів поки немає.</p>
-{% endfor %}
+
+    <div class="materials">
+
+        {% for material in materials %}
+
+            <div class="material-card">
+
+                <span class="material-type">
+                    {{ material.get_material_type_display }}
+                </span>
+
+                <h2>
+                    <a href="{% url 'material-detail' material.pk %}">
+                        {{ material.title }}
+                    </a>
+                </h2>
+
+                <p>
+                    {{ material.description|truncatewords:20 }}
+                </p>
+
+            </div>
+
+        {% empty %}
+
+            <div class="empty">
+                <h2>Матеріалів поки немає</h2>
+                <p>Додайте перший навчальний матеріал.</p>
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    {% if is_paginated %}
+
+        <div class="pagination">
+
+            {% if page_obj.has_previous %}
+                <a class="btn"
+                   href="?page={{ page_obj.previous_page_number }}">
+                    ← Назад
+                </a>
+            {% endif %}
+
+            <span>
+                Сторінка {{ page_obj.number }}
+                з {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a class="btn"
+                   href="?page={{ page_obj.next_page_number }}">
+                    Вперед →
+                </a>
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

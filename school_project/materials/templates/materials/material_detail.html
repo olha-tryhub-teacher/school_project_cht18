@@ -1,10 +1,69 @@
+{% load static %}
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>{{ material.title }}</title>
+    <link rel="stylesheet" href="{% static 'materials/style.css' %}">
 </head>
+
 <body>
+
+<div class="container">
+
+    <div class="detail-card">
+
+        <span class="material-type">
+            {{ material.get_material_type_display }}
+        </span>
+
+        <h1>{{ material.title }}</h1>
+
+        <p class="detail-description">
+            {{ material.description }}
+        </p>
+
+
+        <div class="links">
+
+            {% if material.file %}
+                <a class="btn"
+                   href="{{ material.file.url }}"
+                   target="_blank">
+                    📄 Відкрити файл
+                </a>
+            {% endif %}
+
+
+            {% if material.link %}
+                <a class="btn"
+                   href="{{ material.link }}"
+                   target="_blank">
+                    🔗 Перейти за посиланням
+                </a>
+            {% endif %}
+
+
+            {% if material.youtube_url %}
+                <a class="btn"
+                   href="{{ material.youtube_url }}"
+                   target="_blank">
+                    ▶ YouTube
+                </a>
+            {% endif %}
+
+        </div>
+
+        <br>
+
+        <a href="{% url 'material-list' %}">
+            ← Назад до матеріалів
+        </a>
+
+    </div>
+
+</div>
 
 </body>
 </html>

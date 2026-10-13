@@ -1,10 +1,42 @@
+{% load static %}
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Додати матеріал</title>
+    <link rel="stylesheet" href="{% static 'materials/style.css' %}">
 </head>
+
 <body>
+
+<div class="container">
+
+    <div class="form-card">
+
+        <h1>Додати навчальний матеріал</h1>
+
+        <form method="post" enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <button class="btn" type="submit">
+                Зберегти матеріал
+            </button>
+
+        </form>
+
+        <br>
+
+        <a href="{% url 'material-list' %}">
+            ← Назад до матеріалів
+        </a>
+
+    </div>
+
+</div>
 
 </body>
 </html>
