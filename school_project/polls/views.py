@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
+from django.views import View
 from django.views.generic import ListView, DetailView
 from django.contrib import messages
 
@@ -19,10 +20,10 @@ class PollDetailView(DetailView):
     context_object_name = "poll"
 
 
-def vote(request, pk):
-    poll = get_object_or_404(Poll, pk=pk)
+class VoteView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        poll = get_object_or_404(Poll, pk=pk)
 
-    if request.method == "POST":
         choice_id = request.POST.get("choice")
         choice = get_object_or_404(
             Choice,
@@ -38,4 +39,4 @@ def vote(request, pk):
 
         messages.success(request, "Ваш голос зараховано!")
 
-    return redirect("polls:detail", pk=poll.pk)
+        return redirect("polls:detail", pk=poll.pk)

@@ -1,0 +1,56 @@
+{% extends 'polls/base.html' %}
+
+{% block title %}{{ poll.title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">{{ poll.title }}</h4>
+                {% if poll.is_active %}
+                    <span class="badge bg-success">Активне</span>
+                {% else %}
+                    <span class="badge bg-secondary">Завершено</span>
+                {% endif %}
+            </div>
+
+            <div class="card-body">
+                {% if poll.description %}
+                    <p class="card-text text-light mb-4">{{ poll.description }}</p>
+                {% endif %}
+
+                {% if poll.is_active %}
+                    <form action="{% url 'polls:vote' poll.pk %}" method="POST">
+                        {% csrf_token %}
+                        <div class="list-group mb-4">
+                            {% for choice in poll.choices.all %}
+                                <label class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input me-2" type="radio" name="choice" value="{{ choice.pk }}" id="choice{{ choice.pk }}" required>
+                                        <label class="form-check-label text-white" for="choice{{ choice.pk }}">
+                                            {{ choice.text }}
+                                        </label>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">{{ choice.get_votes_count }} голосів</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Проголосувати</button>
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="alert alert-warning">Це опитування вже закрите для голосування.</div>
+                {% endif %}
+            </div>
+
+            <div class="card-footer text-muted d-flex justify-content-between align-items-center">
+                <a href="{% url 'polls:list' %}" class="btn btn-outline-secondary btn-sm">← До списку опитувань</a>
+                <small>Створено: {{ poll.created_at|date:"d.m.Y H:i" }}</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
