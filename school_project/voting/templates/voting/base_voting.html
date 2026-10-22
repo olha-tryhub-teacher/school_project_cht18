@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ Vote.title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="card-title">{{ Vote.title }}</h2>
+                <p class="text-muted small">
+                    Автор: <strong>{{ Vote.created_by }}</strong> | 
+                    Завершается: {{ Vote.end_date|date:"d.m.Y H:i" }}
+                </p>
+                <p class="card-text">{{ Vote.description }}</p>
+                <hr>
+
+                {% if user_voted_option %}
+                    <!-- РЕЗУЛЬТАТЫ (Если пользователь уже проголосовал) -->
+                    <div class="alert alert-info">
+                        Вы уже проголосовали за вариант: <strong>{{ user_voted_option.text }}</strong>
+                    </div>
+
+                    <h4>Результаты голосования (Всего голосов: {{ total_votes }}):</h4>
+                    
+                    {% for opt in options %}
+                        {% with opt.uservote_set.count as opt_votes %}
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span>{{ opt.text }}</span>
+                                    <span>{{ opt_votes }} голосов</span>
+                                </div>
+                                <div class="progress" style="height: 22px;">
+                                    {% if total_votes > 0 %}
+                                        {% widthratio opt_votes total_votes 100 as percent %}
+                                        <div class="progress-bar bg-success" role="progressbar" 
+                                             style="width: {{ percent }}%;" aria-valuenow="{{ percent }}" 
+                                             aria-valuemin="0" aria-valuemax="100">
+                                            {{ percent }}%
+                                        </div>
+                                    {% else %}
+                                        <div class="progress-bar" style="width: 0%;">0%</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endwith %}
+                    {% endfor %}
+
+                {% else %}
+                    <!-- ФОРМА ГОЛОСОВАНИЯ (Если еще не проголосовал) -->
+                    {% if user.is_authenticated %}
+                        <form action="{% url 'voting:voting-submit' Vote.pk %}" method="post">
+                            {% csrf_token %}
+                            <h5 class="mb-3">Выберите вариант:</h5>
+                            
+                            {% for opt in options %}
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="option" id="opt{{ opt.id }}" value="{{ opt.id }}" required>
+                                    <label class="form-check-label" for="opt{{ opt.id }}">
+                                        {{ opt.text }}
+                                    </label>
+                                </div>
+                            {% empty %}
+                                <p class="text-muted">Для этого голосования пока нет вариантов ответа.</p>
+                            {% endfor %}
+
+                            {% if options %}
+                                <button type="submit" class="btn btn-primary mt-3">Проголосовать</button>
+                            {% endif %}
+                        </form>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            Чтобы принять участие в голосовании, пожалуйста, <a href="/admin/login/">войдите в систему</a>.
+                        </div>
+                    {% endif %}
+                {% endif %}
+
+            </div>
+            <div class="card-footer text-end bg-transparent">
+                <a href="{% url 'voting:voting-list' %}" class="btn btn-secondary btn-sm">Назад к списку</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
